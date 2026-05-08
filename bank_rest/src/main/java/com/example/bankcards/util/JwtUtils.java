@@ -1,19 +1,16 @@
 package com.example.bankcards.util;
 
-import com.example.bankcards.entity.RevokedTokenEntity;
-import com.example.bankcards.repository.RevokedTokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class JwtUtils {
@@ -25,18 +22,19 @@ public class JwtUtils {
     private long jwtExpirationMs;
 
     @Autowired
-    private RevokedTokenRepository revokedTokenRepository;
+    private RedisTemplate<String, Object> redisTemplate;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    public String generateJwtToken(String email) {
+    public String generateJwtToken(String email, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
 
         return Jwts.builder()
                 .subject(email)
+                .claim("role", role)
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(getSigningKey(), Jwts.SIG.HS512)
@@ -58,14 +56,17 @@ public class JwtUtils {
                 return false;
             }
 
-            Jwts.parser()
+            JwtParser jwtParser = Jwts.parser()
                     .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(authToken);
+                    .build();
+
+            Claims claims = jwtParser.parseSignedClaims(authToken).getPayload();
+            Date expiration = claims.getExpiration();
+
+            if (expiration.before(new Date())) {
+                return false;
+            }
             return true;
-        } catch (ExpiredJwtException e) {
-            revokeIfPresent(authToken);
-            return false;
         } catch (JwtException e) {
             return false;
         }
@@ -83,31 +84,20 @@ public class JwtUtils {
             Instant expiresAt = expiration.toInstant();
 
             if (expiresAt.isAfter(Instant.now())) {
-                RevokedTokenEntity revokedToken = RevokedTokenEntity.builder()
-                        .token(token)
-                        .expiresAt(expiresAt)
-                        .build();
-                revokedTokenRepository.save(revokedToken);
+                long ttl = expiresAt.toEpochMilli() - Instant.now().toEpochMilli();
+                redisTemplate.opsForValue().set(
+                        "revoked:" + token,
+                        "revoked",
+                        ttl,
+                        TimeUnit.MILLISECONDS
+                );
             }
         } catch (Exception e) {
-            throw new BadCredentialsException("Invalid JWT Token");
+            throw new RuntimeException("Invalid JWT Token");
         }
     }
 
     private boolean isTokenRevoked(String token) {
-        return revokedTokenRepository.findByToken(token).isPresent();
+        return Boolean.TRUE.equals(redisTemplate.hasKey("revoked:" + token));
     }
-
-    private void revokeIfPresent(String token) {
-        revokedTokenRepository.findByToken(token)
-                .ifPresent(revoked -> revokedTokenRepository.delete(revoked));
-    }
-
-    @Transactional
-    @Scheduled(cron = "0 0 3 * * ?")
-    public void cleanupExpiredTokens() {
-        revokedTokenRepository.deleteByExpiresAtBefore(Instant.now());
-    }
-
-
 }

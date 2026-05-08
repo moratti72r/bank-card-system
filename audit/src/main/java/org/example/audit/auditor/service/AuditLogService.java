@@ -3,12 +3,14 @@ package org.example.audit.auditor.service;
 import com.example.common.message.EventMessage;
 import com.example.common.message.EventType;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.example.audit.auditor.entity.AuditLog;
 import org.example.audit.auditor.repository.AuditLogRepository;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.net.http.HttpRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +27,7 @@ public class AuditLogService {
     }
 
     public AuditLog getById(Long id) {
-        return auditLogRepository.findById(id).orElseThrow(() -> new RuntimeException("Not found"));
+        return auditLogRepository.findById(id).orElseThrow(() -> new RuntimeException("NOT FOUND"));
     }
 
     public List<AuditLog> findFiltered(EventType eventType, String userId, String role, String methodArgs, String methodResult, LocalDateTime from, LocalDateTime to) {
@@ -61,7 +63,16 @@ public class AuditLogService {
     }
 
     private AuditLog mapToAuditLog(EventMessage message) {
-        return AuditLog.builder().eventType(message.getEventType()).userId(message.getUserId()).role(message.getRole()).methodArgs(message.getMethodArgs() != null ? message.getMethodArgs().toString() : null).methodResult(message.getMethodResult() != null ? message.getMethodResult().toString() : null).isSuccess(message.getIsSuccess()).createdAt(message.getCreatedAt()).build();
+        return AuditLog.builder()
+                .eventType(message.getEventType())
+                .userId(message.getUserId())
+                .role(message.getRole())
+                .methodArgs(message.getMethodArgs() != null ? message.getMethodArgs() : null)
+                .methodResult(message.getMethodResult() != null ? message.getMethodResult() : null)
+                .isSuccess(message.getIsSuccess())
+                .createdAt(message.getCreatedAt())
+                .build();
     }
+
 
 }

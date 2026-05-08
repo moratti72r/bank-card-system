@@ -3,8 +3,11 @@ package org.example.audit.auditor.entity;
 import com.example.common.message.EventType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Entity
 @Table(name = "audit_logs")
@@ -25,9 +28,11 @@ public class AuditLog {
 
     private String role;
 
-    private String methodArgs;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, Object> methodArgs;
 
-    private String methodResult;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, Object> methodResult;
 
     private Boolean isSuccess;
 

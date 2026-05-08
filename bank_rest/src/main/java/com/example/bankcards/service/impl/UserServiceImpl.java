@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundEntityException("Пользователь с почтой + " + email + " не найден"));
         Role role = user.getRoles().iterator().next();
-        String jwt = jwtUtils.generateJwtToken(email);
+        String jwt = jwtUtils.generateJwtToken(email, role.getName().name());
 
         return new JwtResponse(jwt, email, role.getName().name());
 

@@ -8,6 +8,16 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     ddl-auto: validate
+  redis:
+    host: ${SPRING_REDIS_HOST:localhost}
+    port: ${SPRING_REDIS_PORT:6379}
+    password: ${SPRING_REDIS_PASSWORD}
+    timeout: 2000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
 
 server:
   port: ${SERVER_PORT:8080}
