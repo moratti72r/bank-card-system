@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # PostgreSQL база данных
   postgres:
     image: postgres:15-alpine
     container_name: bank-postgres
@@ -21,7 +20,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Apache Kafka (с KRaft режимом, ZooKeeper не требуется)
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: bank-kafka
@@ -49,12 +47,11 @@ services:
       timeout: 10s
       retries: 10
 
-  # Сервис уведомлений (Kafka consumer)
-  notification-service:
+  audit-service:
     build:
       context: .
-      dockerfile: notification/Dockerfile
-    container_name: bank-notification-service
+      dockerfile: audit/Dockerfile
+    container_name: bank-audit-service
     depends_on:
       kafka:
         condition: service_healthy
@@ -62,7 +59,7 @@ services:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres?currentSchema=bank
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/postgres #?currentSchema=bank
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
@@ -73,7 +70,6 @@ services:
       - bank-network
     restart: on-failure
 
-  # Основной банковский сервис (REST API + Kafka producer)
   bank-rest-service:
     build:
       context: .

@@ -11,7 +11,6 @@
         <version>1.0.0</version>
     </parent>
 
-    <groupId>com.example</groupId>
     <artifactId>common-dtos</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>

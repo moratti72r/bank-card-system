@@ -1,0 +1,48 @@
+server:
+  port: 8082
+
+app:
+  kafka:
+    topic:
+      audit-event: audit
+
+
+spring:
+  application:
+    name: audit-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    #    ?currentSchema=bank
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
+  kafka:
+    bootstrap-servers: localhost:9092 #kafka:9092
+    consumer:
+      group-id: audit-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.example.common.message"
+        spring.json.type.mapping: eventMessage:com.example.common.message.EventMessage
+
+  graphql:
+    path: /graphql
+    schema:
+      printer:
+        enabled: true
+    graphiql:
+      enabled: true
+
+logging:
+  level:
+    org.springframework.graphql: DEBUG
+    org.springframework.boot.autoconfigure.graphql: DEBUG

@@ -6,18 +6,30 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+      </profile>
+      <profile name="Annotation profile for Bank Cards System" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.32/lombok-1.18.32.jar" />
+        </processorPath>
         <module name="common-dtos" />
-        <module name="notification" />
+        <module name="audit" />
         <module name="bank-cards-system" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="test" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="audit" options="-parameters" />
       <module name="bank-cards-system" options="-parameters" />
       <module name="bank-cards-system (1)" options="" />
       <module name="common-dtos" options="-parameters" />
-      <module name="notification" options="-parameters" />
+      <module name="test" options="-parameters" />
     </option>
   </component>
 </project>

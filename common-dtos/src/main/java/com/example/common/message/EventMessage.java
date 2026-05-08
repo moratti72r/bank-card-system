@@ -1,4 +1,4 @@
-package com.example.common.dto;
+package com.example.common.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,19 +7,22 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NotificationDto {
+public class EventMessage {
 
         private EventType eventType;
 
-        private UUID userId;
+        private String userId;
 
-        private Map<String, Object> payload;
+        private String role;
+
+        private Map<String,Object> methodArgs;
+
+        private Map<String, Object> methodResult;
 
         @Builder.Default
         private Boolean isSuccess = true;

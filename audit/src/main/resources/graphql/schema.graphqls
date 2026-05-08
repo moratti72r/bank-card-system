@@ -1,0 +1,46 @@
+enum EventType {
+    USER_REGISTERED
+    USER_LOGGED_IN
+    USER_LOGOUT
+    USER_DELETED
+    USER_UPDATED
+    USER_TO_ADMIN
+    CARD_CREATED
+    CARD_BY_ID
+    CARD_DELETED
+    CARD_BLOCKED
+    CARD_ACTIVATED
+    CARD_BALANCE
+    CARDS_WAITING_BLOCK
+    CARDS_ALL
+    CARDS_ALL_BY_USER
+    CARDS_BY_PARAMETERS
+    TRANSFER
+}
+
+type AuditLog {
+    id: ID!
+    eventType: EventType
+    userId: String
+    role: String
+    methodArgs: String
+    methodResult: String
+    isSuccess: Boolean
+    createdAt: String   # LocalDateTime в строковом формате
+}
+
+type Query {
+    auditRecord(id: ID!): AuditLog
+
+    auditRecords(
+        eventType: EventType
+        userId: String
+        role: String
+        methodArgs: String
+        methodResult: String
+        from: String      # Формат: "yyyy-MM-dd HH:mm:ss"
+        to: String        # Формат: "yyyy-MM-dd HH:mm:ss"
+    ): [AuditLog!]!
+
+    allAuditRecords: [AuditLog!]!
+}

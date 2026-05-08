@@ -26,7 +26,7 @@
 
     <modules>
         <module>bank_rest</module>
-        <module>notification</module>
+        <module>audit</module>
         <module>common-dtos</module>
     </modules>
 
@@ -37,10 +37,8 @@
         <relativePath/> <!-- ищет в репозитории, а не локально -->
     </parent>
 
-    <!-- Общее управление зависимостями -->
     <dependencyManagement>
         <dependencies>
-            <!-- Можно явно управлять версиями, если нужно -->
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-api</artifactId>
@@ -71,7 +69,17 @@
             <dependency>
                 <groupId>org.springframework.kafka</groupId>
                 <artifactId>spring-kafka</artifactId>
-                <version>3.3.0</version> <!-- Укажите версию явно -->
+                <version>3.3.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.32</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-graphql</artifactId>
+                <version>3.3.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -106,6 +114,13 @@
                     <configuration>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                                <version>${lombok.version}</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
                 </plugin>
                 <plugin>

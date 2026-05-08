@@ -9,7 +9,7 @@ COPY . .
 RUN ls -la && \
     ls -la common-dtos/ && \
     ls -la bank_rest/ && \
-    ls -la notification/
+    ls -la audit/
 
 # Собираем весь проект (не указывая конкретные модули)
 RUN mvn clean package -DskipTests
@@ -19,7 +19,7 @@ FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # Копируем JAR из директории notification/target
-COPY --from=build /app/notification/target/*.jar app.jar
+COPY --from=build /app/audit/target/*.jar app.jar
 
 EXPOSE 8082
 

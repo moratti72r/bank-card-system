@@ -1,7 +1,7 @@
-package com.example.common.dto;
+package com.example.common.message;
 
 public enum EventType {
-    USER_REGISTERED, USER_LOGGED_IN, USER_lOGOUT, USER_DELETED,
+    USER_REGISTERED, USER_LOGGED_IN, USER_LOGOUT, USER_DELETED,
     USER_UPDATED, USER_TO_ADMIN,
 
     CARD_CREATED, CARD_BY_ID, CARD_DELETED, CARD_BLOCKED, CARD_ACTIVATED,
