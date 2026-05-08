@@ -1,0 +1,13 @@
+# src/main/resources/application-docker.yml
+spring:
+  kafka:
+    bootstrap-servers: kafka:9092
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    ddl-auto: validate
+
+server:
+  port: ${SERVER_PORT:8080}

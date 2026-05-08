@@ -1,0 +1,60 @@
+app:
+  kafka:
+    topic:
+      audit-event: audit
+spring:
+  application:
+    name: bank-cards-system
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    #    bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    #    ?currentSchema=bank
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      use-new-id-generator-mappings: false
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/migration/liquibase-master.yml
+    default-schema: public
+
+jasypt:
+  encryptor:
+    password: myStrongEncryptionPassword123!
+    algorithm: PBEWithMD5AndDES
+    key-obtention-iterations: 1000
+    salt-generator-classname: org.jasypt.salt.RandomSaltGenerator
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    url: /docs/openapi.yaml
+  api-docs:
+    enabled: true
